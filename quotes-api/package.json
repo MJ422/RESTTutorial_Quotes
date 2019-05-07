@@ -1,7 +1,7 @@
 {
   "name": "quotes-api",
   "version": "1.0.0",
-  "description": "Small sample-case of a REST API built to work with an array of quotes, returning and modifying them as JSON objects. ",
+  "description": "Small REST API that delivers quotes from a database based on HTTP requests listened for & received.",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

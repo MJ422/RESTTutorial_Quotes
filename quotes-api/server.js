@@ -1,81 +1,104 @@
+//
+//// QUOTES-API - Mike C - Re-Do 5/3/2019!
+//
+//First, require express and body-parser as dependencies!
+var express = require("express");
+var bodyParser = require("body-parser");
 
-
-
-//create Express dependecy 
-var express = require('express');
-
-//create body-parser depen
-var bodyparse = require('body parser');
-//then, let body-parser pass on url-encoded data (POST requests)
-app.use(bodyParser.urlencoded({extended: true}));
-
-
-//create Express object
+//Then, create an object of the Express module to use in this server
 var app = express();
+// Also, create an instance of usage for body-parser as an addon to Express
+// This is allows url-encoded data - HTML forms are this type of data format
+app.use(bodyParser.urlencoded({ extended: true }));
 
-//init the port# to 3000
+//Now, create the port at the required port#
 var port = 3000;
 
-//request handler function below
-app.listen(port, function(){
-    console.log('Now listening on port: ' + port);
+//Remember, every REST API must set up its request handler!
+app.listen(port, function() {
+  console.log("Now listening on port: " + port);
 });
 
-//index page, default for the / GET call 
-app.get('/', function(request, response){
-    console.log('GET request for \"/\"');
-    response.send('Welcome to the home page, baby!');
+//Now, we set up the endpoints for specific requests (.get) and their URI (p1)
+app.get("/", function(request, response) {
+  response.send("Welcome to the Home Page, Baby!");
 });
 
-//quotes bank hard coded in an array of JSON objects
+// Since we dont have a DATABASE YET!! we will have to hard code our data
+// object (an array JSON objects)
 var quotes = [
-    {
-        quote: "To be or not to be",
-        author: "Prince Hamlet",
-        year: 1358
-    },
-    {
-        quote: "Shall I compare thee to a summer's day?",
-        author: "Romeo",
-        year: 1680
-    },
-    {
-        quote: "Not in my house!",
-        author: "Dikembe Mutumbo",
-        year: 1994
-    }
+  {
+    id: 1,
+    quote: "It's all in the reflexes.",
+    author: "Jack Burton",
+    year: 1986
+  },
+  {
+    id: 2,
+    quote: "If it bleeds, we can kill it.",
+    author: "Maj. Alan 'Dutch' Schaefer",
+    year: 1987
+  },
+  {
+    id: 3,
+    quote: "Either put on these glasses, or start eating that trash can...",
+    author: "John Nada",
+    year: 1988
+  }
 ];
 
-//return the above
-app.get("/quotes", function(req, res){
-    //console.log('Get a list of quotes as a JSON');
-    //res.json(quotes);
+/* 
+We want our API to be able to return quotes filtered by year. For that, 
+we let it accept a Query String, an extra piece of information inlcuded 
+in the request URL!
 
-    if (req.query.year){
-        res.send("Return a list of quotes from the year: " + req.query.year);
-    }
-    else{
-        res.json(quotes);
-    }
+Query Strings can be included in the Request URI in the following format:
+    baseURL/path?query=value 
+    ---------
+    query == the name of the query string
+    value == its value to filter by 
+
+    example for this quotes project would be:
+    localhost3000/quotes?year=1987
+*/
+//Set up endpoint for GET reqs at the /quotes path
+//
+
+//Request handler for: GET request, on "/quotes", with query option for year
+app.get("/quotes", function(req, res) {
+  if (req.query.year) {
+    res.send("Return a list of quotes from the year: " + req.query.year);
+    // make a placeholder message that tells the developer
+    // (to create code that tells the API to...) return only the query'd year
+  } else {
+    res.json(quotes);
+    // return the list as a JSON
+  }
+  // We have a catch if anyone passes a query for year in the URL asking
+  // for a specific year category of quotes.
 });
 
-//find quote by the corresponding id integer passed in the url (named route parameter)
-app.get('/quotes/:id', function(req, res){
-    res.send("Return quote with the ID: " + req.params.id);
-    console.log("Request made for quote with ID of " + req.params.id);
+//Request handler for: GET request, on "/quotes", with query option for id
+app.get("/quotes/:id", function(req, res) {
+  console.log("Return quote with the ID: " + req.params.id);
+  res.send("Return quote with the ID: " + req.params.id);
+  /* Notice how the :id is created as a sort-of param that awaits any
+     actual number passed in to represent the id number
+
+     Note: this is not the same as a query, so there is no use of ?query=val
+     instead, it is created as a sub-file delimited by /
+
+     so: localhost:3000/quotes/2
+  */
 });
 
-//find quote(s) by the corresponding author string passed in to the url (named route parameter)
-app.get('/quotes/by/:author', function(req, res){
-    res.send("Return a quote from author: " + req.params.author);
-    console.log("Get request in for quotes from author: " + req.params.author);
+app.delete("/quotes/delete/:id", function(req, res) {
+  console.log("Deleting quote with the quote ID: " + req.params.id);
 });
 
-app.post('/quotes',function(req, res){
-    console.log("insert a new quote in the quotes array");
-    //log the synopsis of the process 
-    res.json(req.body);
-    //assign the response (in JSON format) = the body of the POST request
+app.post("/quotes", function(req, res) {
+  console.log("Insert a new quote: " + req.body.quote);
+  //log the synopsis of the process
+  res.json(req.body);
+  //assign the response (in JSON format) = the body of the POST request
 });
-
-
