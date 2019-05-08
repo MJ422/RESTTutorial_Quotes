@@ -73,18 +73,64 @@ Query Strings can be included in the Request URI in the following format:
 //Request handler for: GET request, on "/quotes", with query option for year
 app.get("/quotes", function (req, res) {
   if (req.query.year) {
-    res.send("Return a list of quotes from the year: " + req.query.year);
+    db.all('SELECT * FROM quotes WHERE year = ?', [parseInt(req.query.year)], function (err, rows) {
+      if (err) {
+        res.send("Error!: " + err.message);
+      }
+      else {
+        console.log("Returning a list of quotes from the year: " + req.query.year);
+        res.json(rows);
+        //convert all of the information in the rows that come up after the query in to a JSON
+      }
+    });
     // make a placeholder message that tells the developer
     // (to create code that tells the API to...) return only the query'd year
-  } else {
-    res.json(quotes);
-    // return the list as a JSON
+  }
+  else if (req.query.author) {
+    db.all('SELECT * FROM quotes WHERE author = ?', (req.query.author), function (err, rows) {
+      if (err) {
+        res.send("Error!: " + err.message);
+      }
+      else {
+        console.log("Returning a list of quotes from author: " + req.query.author);
+        res.json(rows);
+        //convert all of the information in the rows that come up after the query in to a JSON
+      }
+    });
+  }
+  else if (req.query.id) {
+    db.get('SELECT * FROM quotes WHERE author = ?', (req.query.id), function (err, rows) {
+      if (err) {
+        res.send("Error!: " + err.message);
+      }
+      else {
+        console.log("Returning a math for the quote: " + req.query.id);
+        res.json(rows);
+        //convert all of the information in the rows that come up after the query in to a JSON
+      }
+    });
+  }
+  else {
+    db.all('SELECT * FROM quotes', function processRows(err, rows) {
+      if (err) {
+        res.send(err.message);
+      }
+      else {
+        for (var i = 0; i < rows.length; i++) {
+          console.log(rows[i].quote);
+        }//end inner for loop
+        res.json(rows);
+      }
+    });
   }
   // We have a catch if anyone passes a query for year in the URL asking
   // for a specific year category of quotes.
 });
 
-//Request handler for: GET request, on "/quotes", with query option for id
+
+
+
+//This code is now moot! We have added a new catch for querying author AND id in lines 75 - 112
 app.get("/quotes/:id", function (req, res) {
   console.log("Return quote with the ID: " + req.params.id);
   res.send("Return quote with the ID: " + req.params.id);
@@ -98,9 +144,15 @@ app.get("/quotes/:id", function (req, res) {
   */
 });
 
+
+
+
 // The next two get handlers will use Named Route Parameters - this is where
 // the API is expecting a specific search key to be passed in the URI as
 // denoted by the " : " character preceding "id"
+
+
+
 app.get("/quotes/by/:author", function (req, res) {
   console.log("Returning quotes by the author: " + req.params.author);
   //first, log the process for developer notes
@@ -112,9 +164,13 @@ app.get("/quotes/by/:author", function (req, res) {
   // to display
 });
 
+
+
 app.delete("/quotes/delete/:id", function (req, res) {
   console.log("Deleting quote with the quote ID: " + req.params.id);
 });
+
+
 
 app.post("/quotes", function (req, res) {
   console.log("Insert a new quote: " + req.body.quote);
