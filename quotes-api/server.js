@@ -92,6 +92,11 @@ app.get("/quotes/:id", function(req, res) {
   */
 });
 
+app.get("/quotes/by/:author", function(req, res) {
+  console.log("Returning quotes by the author: " + req.params.author);
+  res.send("Return a quote with by the author: " + req.params.author);
+});
+
 app.delete("/quotes/delete/:id", function(req, res) {
   console.log("Deleting quote with the quote ID: " + req.params.id);
 });
