@@ -4,6 +4,12 @@
 //First, require express and body-parser as dependencies!
 var express = require("express");
 var bodyParser = require("body-parser");
+//Now, it's time for some database action! First, create dependency for the DBMS sqlite3 
+var sqlite = require('sqlite3');
+
+//We also need to create a db object for our quotes database
+var db = new sqlite.Database('quotes.db');
+
 
 //Then, create an object of the Express module to use in this server
 var app = express();
@@ -15,12 +21,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 var port = 3000;
 
 //Remember, every REST API must set up its request handler!
-app.listen(port, function() {
+app.listen(port, function () {
   console.log("Now listening on port: " + port);
 });
 
 //Now, we set up the endpoints for specific requests (.get) and their URI (p1)
-app.get("/", function(request, response) {
+app.get("/", function (request, response) {
   response.send("Welcome to the Home Page, Baby!");
 });
 
@@ -65,7 +71,7 @@ Query Strings can be included in the Request URI in the following format:
 //
 
 //Request handler for: GET request, on "/quotes", with query option for year
-app.get("/quotes", function(req, res) {
+app.get("/quotes", function (req, res) {
   if (req.query.year) {
     res.send("Return a list of quotes from the year: " + req.query.year);
     // make a placeholder message that tells the developer
@@ -79,7 +85,7 @@ app.get("/quotes", function(req, res) {
 });
 
 //Request handler for: GET request, on "/quotes", with query option for id
-app.get("/quotes/:id", function(req, res) {
+app.get("/quotes/:id", function (req, res) {
   console.log("Return quote with the ID: " + req.params.id);
   res.send("Return quote with the ID: " + req.params.id);
   /* Notice how the :id is created as a sort-of param that awaits any
@@ -95,7 +101,7 @@ app.get("/quotes/:id", function(req, res) {
 // The next two get handlers will use Named Route Parameters - this is where
 // the API is expecting a specific search key to be passed in the URI as
 // denoted by the " : " character preceding "id"
-app.get("/quotes/by/:author", function(req, res) {
+app.get("/quotes/by/:author", function (req, res) {
   console.log("Returning quotes by the author: " + req.params.author);
   //first, log the process for developer notes
   res.send("Return a quote with by the author: " + req.params.author);
@@ -106,11 +112,11 @@ app.get("/quotes/by/:author", function(req, res) {
   // to display
 });
 
-app.delete("/quotes/delete/:id", function(req, res) {
+app.delete("/quotes/delete/:id", function (req, res) {
   console.log("Deleting quote with the quote ID: " + req.params.id);
 });
 
-app.post("/quotes", function(req, res) {
+app.post("/quotes", function (req, res) {
   console.log("Insert a new quote: " + req.body.quote);
   //log the synopsis of the process
   res.json(req.body);
