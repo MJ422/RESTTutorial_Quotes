@@ -92,9 +92,18 @@ app.get("/quotes/:id", function(req, res) {
   */
 });
 
+// The next two get handlers will use Named Route Parameters - this is where
+// the API is expecting a specific search key to be passed in the URI as
+// denoted by the " : " character preceding "id"
 app.get("/quotes/by/:author", function(req, res) {
   console.log("Returning quotes by the author: " + req.params.author);
+  //first, log the process for developer notes
   res.send("Return a quote with by the author: " + req.params.author);
+  // Response currently set: notification in the form of a string,
+  // using the req object in the .get's parameter to call the parameters
+  // of the object passed in: in this case, a JSON object. That JSON
+  // has a field "author", this is where Express will look to find the content
+  // to display
 });
 
 app.delete("/quotes/delete/:id", function(req, res) {
