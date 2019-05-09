@@ -1,14 +1,15 @@
 //
 //// QUOTES-API - Mike C - Re-Do 5/3/2019!
 //
-/* 
- ************************************************************************************
-          Signed off for the night . . . here's what's left to do!
 
-          1. Find a way to convert that random quotes array we have at line 43 in to our QuotesBank file
-          2. Configure post requests to add more quotes from the client side, via Postman application
-          
- ************************************************************************************
+
+
+/* 
+ ***************************************************************************************************************************
+       
+ First, lets initialize our fields, ports, and all the good stuff needed to set up REST services
+
+ ***************************************************************************************************************************
 */
 
 //First, require express and body-parser as dependencies!
@@ -17,15 +18,17 @@ var bodyParser = require("body-parser");
 //Now, it's time for some database action! First, create dependency for the DBMS sqlite3 
 var sqlite = require('sqlite3');
 
-//We also need to create a db object for our quotes database
-var db = new sqlite.Database('QuotesBank.db');
-
-
 //Then, create an object of the Express module to use in this server
 var app = express();
+
+
 // Also, create an instance of usage for body-parser as an addon to Express
 // This is allows url-encoded data - HTML forms are this type of data format
 app.use(bodyParser.urlencoded({ extended: true }));
+
+
+//We also need to create a db object for our quotes database
+var db = new sqlite.Database('QuotesBank.db');
 
 //Now, create the port at the required port#
 var port = 3000;
@@ -35,13 +38,8 @@ app.listen(port, function () {
   console.log("Now listening on port: " + port);
 });
 
-//Now, we set up the endpoints for specific requests (.get) and their URI (p1)
-app.get("/", function (request, response) {
-  response.send("Welcome to the Home Page, Baby!");
-});
-
-// Since we dont have a DATABASE YET!! we will have to hard code our data
-// object (an array JSON objects)
+// This was a left-over quote array that we used before we attached our .db file.
+// Let's figure out a way to transform this in to our Quotes table in QuotesBank.db! 
 var quotes = [
   {
     id: 1,
@@ -63,9 +61,29 @@ var quotes = [
   }
 ];
 
+
+/* 
+ ***************************************************************************************************************************
+       
+ Now, using the app and db variables we created and connected to Express and our database file, let's get to work
+ creating methods that listen for certain requests and respond with logically-manipulated data!
+
+ ***************************************************************************************************************************
+*/
+
+//Now, we set up the endpoints for specific requests: request type (.get) and their URI (param1)
+
+// The first is just for a general page request. Takes you to the main index page of the application.
+// For now, we'll denote it so we know it's the home page, via my cute message, and come back to it later.
+app.get("/", function (request, response) {
+  response.send("Welcome to the Home Page, Baby!");
+});
+
+
+
 /* 
 We want our API to be able to return quotes filtered by year. For that, 
-we let it accept a Query String, an extra piece of information inlcuded 
+we let it accept a Query String: an extra piece of information inlcuded 
 in the request URL!
 
 Query Strings can be included in the Request URI in the following format:
@@ -77,12 +95,13 @@ Query Strings can be included in the Request URI in the following format:
     example for this quotes project would be:
     localhost3000/quotes?year=1987
 */
-//Set up endpoint for GET reqs at the /quotes path
+//Firstly, set up a 'base' endpoint for GET requests at the /quotes path
 //
 
-//Request handler for: GET request, on "/quotes", with query option for year
 app.get("/quotes", function (req, res) {
-  if (req.query.year) {
+
+  if (req.query.year) //IF the req contains a query (?) denoted for "year", process this block
+  {
     db.all('SELECT * FROM Quotes WHERE year = ?', [parseInt(req.query.year)], function (err, rows) {
       if (err) {
         res.send("Error!: " + err.message);
@@ -93,10 +112,12 @@ app.get("/quotes", function (req, res) {
         //convert all of the information in the rows that come up after the query in to a JSON
       }
     });
-    // make a placeholder message that tells the developer
-    // (to create code that tells the API to...) return only the query'd year
+    // return only the query'd year
   }
-  else if (req.query.author) {
+
+
+  else if (req.query.author) //IF the req contains a query (?) denoted for "author", process this block
+  {
     db.all('SELECT * FROM Quotes WHERE author = ?', (req.query.author), function (err, rows) {
       if (err) {
         res.send("Error!: " + err.message);
@@ -107,85 +128,78 @@ app.get("/quotes", function (req, res) {
         //convert all of the information in the rows that come up after the query in to a JSON
       }
     });
+    // return only the query'd author
   }
-  else if (req.query.id) {
-    db.get('SELECT * FROM Quotes WHERE author = ?', (req.query.id), function (err, rows) {
+
+
+  else if (req.query.id) //IF the req contains a query (?) denoted for "id", process this block
+  {
+    db.get('SELECT * FROM Quotes WHERE id = ?', (req.query.id), function (err, row) {
+      //Notice that we used .get instead of .all - we only expect one result because ID is the unique primary key!
       if (err) {
         res.send("Error!: " + err.message);
       }
       else {
-        console.log("Returning a match for the quote: " + req.query.id);
-        res.json(rows);
+        console.log("Returning a match for the id: " + req.query.id);
+        res.json(row);
         //convert all of the information in the rows that come up after the query in to a JSON
       }
     });
+    // return only the query'd id (primary key)
   }
-  else {
+
+
+  else //Otherwise, run a select-all query for Quotes table and return the result set as JSON (if no error)
+  {
     db.all('SELECT * FROM Quotes', function processRows(err, rows) {
       if (err) {
         res.send(err.message);
       }
       else {
         for (var i = 0; i < rows.length; i++) {
+          //in the npm shell, we log the values in 'quote' for each of the records in QuotesBank.db
           console.log(rows[i].quote);
         }//end inner for loop
+
+        //Here, we send our response to the page: the entire Quotes table formatted as JSON objects 
         res.json(rows);
-      }
-    });
-  }
-  // We have a catch if anyone passes a query for year in the URL asking
-  // for a specific year category of quotes.
-});
+
+      }//end inner else-block for: if error report error, or else do as requested
+
+    });//end processRows function on SELECT * FROM Quotes
+
+  }//end outer else-block (see opening tag for note)
+
+});//end the base function - the 'base' endpoint: .get() for /quotes 
 
 
-
-
-//This code is now moot! We have added a new catch for querying author AND id in lines 75 - 112
-app.get("/quotes/:id", function (req, res) {
-  console.log("Return quote with the ID: " + req.params.id);
-  res.send("Return quote with the ID: " + req.params.id);
-  /* Notice how the :id is created as a sort-of param that awaits any
-     actual number passed in to represent the id number
-
-     Note: this is not the same as a query, so there is no use of ?query=val
-     instead, it is created as a sub-file delimited by /
-
-     so: localhost:3000/quotes/2
-  */
-});
-
-
-
-
-// The next two get handlers will use Named Route Parameters - this is where
-// the API is expecting a specific search key to be passed in the URI as
-// denoted by the " : " character preceding "id"
-
-
-
-app.get("/quotes/by/:author", function (req, res) {
-  console.log("Returning quotes by the author: " + req.params.author);
-  //first, log the process for developer notes
-  res.send("Return a quote with by the author: " + req.params.author);
-  // Response currently set: notification in the form of a string,
-  // using the req object in the .get's parameter to call the parameters
-  // of the object passed in: in this case, a JSON object. That JSON
-  // has a field "author", this is where Express will look to find the content
-  // to display
-});
-
-
-
-app.delete("/quotes/delete/:id", function (req, res) {
+// To delete an entry, we should make sure that we delete exactly the entry we want - this means
+// that we need to identify it by a unique identifier (hint: what is the one field that gives 
+// each record in the db a unique value?)
+app.delete("/quotes/delete/:id", function (req, res) //Delete record with the id integer corresponding to the named route parameter (:id)
+{
   console.log("Deleting quote with the quote ID: " + req.params.id);
+  db.run('DELETE FROM Quotes WHERE id = ?', [req.params.id]);
+
+
 });
 
 
-
+// Finally, we learn how to convert POST requests in to records in our Quotes table! 
+// First, we want to make sure we have enabled the body-parser module. (Let's recall back 
+// in our lesson for the exact formatting needed when passing request body values in to Node via Express)
 app.post("/quotes", function (req, res) {
-  console.log("Insert a new quote: " + req.body.quote);
-  //log the synopsis of the process
-  res.json(req.body);
-  //assign the response (in JSON format) = the body of the POST request
+
+  db.run('INSERT INTO Quotes (quote, author, year) VALUES(?,?,?)', [req.body.quote, req.body.author, req.body.year], function (err) {
+    if (err) {
+      console.log(err.message);
+    }
+    else {
+      res.send("Inserted quote " + req.body.id);
+    }
+
+  });
+
 });
+
 
