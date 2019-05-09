@@ -73,7 +73,7 @@ Query Strings can be included in the Request URI in the following format:
 //Request handler for: GET request, on "/quotes", with query option for year
 app.get("/quotes", function (req, res) {
   if (req.query.year) {
-    db.all('SELECT * FROM quotes WHERE year = ?', [parseInt(req.query.year)], function (err, rows) {
+    db.all('SELECT * FROM Quotes WHERE year = ?', [parseInt(req.query.year)], function (err, rows) {
       if (err) {
         res.send("Error!: " + err.message);
       }
@@ -87,7 +87,7 @@ app.get("/quotes", function (req, res) {
     // (to create code that tells the API to...) return only the query'd year
   }
   else if (req.query.author) {
-    db.all('SELECT * FROM quotes WHERE author = ?', (req.query.author), function (err, rows) {
+    db.all('SELECT * FROM Quotes WHERE author = ?', (req.query.author), function (err, rows) {
       if (err) {
         res.send("Error!: " + err.message);
       }
@@ -99,19 +99,19 @@ app.get("/quotes", function (req, res) {
     });
   }
   else if (req.query.id) {
-    db.get('SELECT * FROM quotes WHERE author = ?', (req.query.id), function (err, rows) {
+    db.get('SELECT * FROM Quotes WHERE author = ?', (req.query.id), function (err, rows) {
       if (err) {
         res.send("Error!: " + err.message);
       }
       else {
-        console.log("Returning a math for the quote: " + req.query.id);
+        console.log("Returning a match for the quote: " + req.query.id);
         res.json(rows);
         //convert all of the information in the rows that come up after the query in to a JSON
       }
     });
   }
   else {
-    db.all('SELECT * FROM quotes', function processRows(err, rows) {
+    db.all('SELECT * FROM Quotes', function processRows(err, rows) {
       if (err) {
         res.send(err.message);
       }
