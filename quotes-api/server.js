@@ -1,6 +1,16 @@
 //
 //// QUOTES-API - Mike C - Re-Do 5/3/2019!
 //
+/* 
+ ************************************************************************************
+          Signed off for the night . . . here's what's left to do!
+
+          1. Find a way to convert that random quotes array we have at line 43 in to our QuotesBank file
+          2. Configure post requests to add more quotes from the client side, via Postman application
+          
+ ************************************************************************************
+*/
+
 //First, require express and body-parser as dependencies!
 var express = require("express");
 var bodyParser = require("body-parser");
