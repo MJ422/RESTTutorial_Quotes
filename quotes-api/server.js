@@ -7,7 +7,7 @@
 /* 
  ***************************************************************************************************************************
        
- First, lets initialize our fields, ports, and all the good stuff needed to set up REST services
+ First, lets initialize our fields, dependencies, ports, database files and all the good stuff needed to set up REST services
 
  ***************************************************************************************************************************
 */
