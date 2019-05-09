@@ -8,7 +8,7 @@ var bodyParser = require("body-parser");
 var sqlite = require('sqlite3');
 
 //We also need to create a db object for our quotes database
-var db = new sqlite.Database('quotes.db');
+var db = new sqlite.Database('QuotesBank.db');
 
 
 //Then, create an object of the Express module to use in this server
@@ -178,3 +178,4 @@ app.post("/quotes", function (req, res) {
   res.json(req.body);
   //assign the response (in JSON format) = the body of the POST request
 });
+
