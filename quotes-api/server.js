@@ -12,9 +12,13 @@
  ***************************************************************************************************************************
 */
 
+
+
 //First, require express and body-parser as dependencies!
 var express = require("express");
+
 var bodyParser = require("body-parser");
+
 //Now, it's time for some database action! First, create dependency for the DBMS sqlite3 
 var sqlite = require('sqlite3');
 
@@ -31,15 +35,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 var db = new sqlite.Database('QuotesBank.db');
 
 //Now, create the port at the required port#
-var port = 3000;
+let port = 3000;
 
 //Remember, every REST API must set up its request handler!
 app.listen(port, function () {
   console.log("Now listening on port: " + port);
 });
 
-// This was a left-over quote array that we used before we attached our .db file.
-// Let's figure out a way to transform this in to our Quotes table in QuotesBank.db! 
+/* 
+! ! ! STILL TO DO ! ! ! ! 
+This was a left-over quote array that we used before we attached our .db file. 
+Let's figure out a way to transform this in to our Quotes table in QuotesBank.db
+without just manually entering! 
+! ! ! ! ! ! ! ! ! ! ! ! ! 
+ */
 var quotes = [
   {
     id: 1,
